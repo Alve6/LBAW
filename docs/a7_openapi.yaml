@@ -1,0 +1,507 @@
+openapi: 3.0.0
+
+info:
+  version: '1.0'
+  title: 'NoMisHub Web API'
+  description: 'Web Resources Specification (A7) for NoMisHub'
+
+servers:
+- url: http://db.fe.up.pt
+  description: Production server
+
+tags:
+  - name: 'M01: Authentication and Profile View and Management'
+  - name: 'M02: News'
+  - name: 'M03: Comments and Votes'
+  - name: 'M04: Admin/Moderator Management'
+  - name: 'M05: Static Pages'
+
+paths:
+
+  /login:
+    get:
+      operationId: R101
+      summary: 'R101: Login Form'
+      description: 'Provide login form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+      responses:
+        '200':
+          description: 'Ok. Show login UI'
+    post:
+      operationId: R102
+      summary: 'R102: Login Action'
+      description: 'Process the login form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+ 
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:    # <!--- form field name
+                  type: string
+                password:    # <!--- form field name
+                  type: string
+              required:
+                - username
+                - password
+ 
+      responses:
+        '302':
+          description: 'Redirect after processing the login credentials.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to user profile.'
+                  value: '/users/{id}'
+                302Error:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
+ 
+  /logout:
+
+    post:
+      operationId: R103
+      summary: 'R103: Logout Action'
+      description: 'Logout authenticated used. Access: USR'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+      responses:
+        '302':
+          description: 'Redirect after processing logout.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful logout. Redirect to main page.'
+                  value: '/'
+
+  /register:
+    get:
+      operationId: R104
+      summary: 'R104: Register Form'
+      description: 'Provide registration form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+      responses:
+        '200':
+          description: 'Ok. Show sign-up UI'
+
+    post:
+      operationId: R105
+      summary: 'R105: Register Action'
+      description: 'Processes the registration form. Access: PUB'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - name
+                - email
+                - password
+
+      responses:
+        '302':
+          description: 'Redirect after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful registration. Redirect to user profile.'
+                  value: '/users/{id}'
+                302Failure:
+                  description: 'Failed registration. Redirect to login form.'
+                  value: '/register'
+
+  /users/{user}:
+    get:
+      operationId: R106
+      summary: 'R106: View user profile'
+      description: 'Show the individual user profile. Access: PUB'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: object
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show view profile UI.'
+        '404':
+          description: 'Not Found. User not found.'
+
+  /user/edit/{user}:
+    get:
+      operationId: R107
+      summary: 'R107: View user information edit form'
+      description: 'Show the user interface for profile edition. Access: OWN, ADM'
+      tags:
+       - 'M01: Authentication and Profile View and Management'
+       - 'M04: Admin/Moderator Management'
+
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: object
+          required: true
+      
+      responses:
+        '200':
+          description: 'Ok. Show user profile edition UI.'
+        '404':
+          description: 'Not Found. User not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+
+    post:
+      operationId: R108
+      summary: 'R108: Process the profile edit form'
+      description: 'Process the profile editing form. Access: OWN, ADM'
+      tags:
+      - 'M01: Authentication and Profile View and Management'
+      - 'M04: Admin/Moderator Management'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                name:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+                email:
+                  type: string
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+              required:
+                - current_password
+      
+      responses:
+        '302':
+          description: 'Redirect after processing the new profile information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful editing. Redirect to user profile.'
+                  value: '/users/{id}'
+                302Failure:
+                  description: 'Failed editing. Redirect to edit profile form.'
+                  value: '/users/edit/{id}'
+        '404':
+          description: 'Not Found. User not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+    
+  /user/delete/{user}:
+    get:
+      operationId: R109
+      summary: 'R109: View user information deletion form'
+      description: 'Show the user interface for profile deletion. Access: OWN, ADM'
+      tags:
+        - 'M01: Authentication and Profile View and Management'
+        - 'M04: Admin/Moderator Management'
+
+      parameters:
+        - in: path
+          name: user
+          schema:
+            type: object
+          required: true
+      
+      responses:
+        '200':
+          description: 'Ok. Show user profile deletion UI.'
+        '404':
+          description: 'Not Found. User not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+
+    post:
+      operationId: R110
+      summary: 'R110: Delete the account.'
+      description: 'Delete th account. Access: OWN, ADM'
+      tags:
+      - 'M01: Authentication and Profile View and Management'
+      - 'M04: Admin/Moderator Management'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required: 
+                - id
+      
+      responses:
+        '302':
+          description: 'Redirect after deleting the account.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirect to main page.'
+                  value: '/news'
+        '404':
+          description: 'Not Found. User not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+
+  /news:
+    get:
+      operationId: R201
+      summary: 'R201: View all news'
+      description: 'Show all news. Access: PUB'
+      tags:
+        - 'M02: News'
+
+      responses:
+        '200':
+          description: 'Ok. Show view all news UI.'
+
+  /news/{news}:
+    get:
+      operationId: R202
+      summary: 'R202: View news page'
+      description: 'Show the individual news page. Access: PUB'
+      tags:
+        - 'M02: News'
+
+      parameters:
+        - in: path
+          name: news
+          schema:
+            type: object
+          required: true
+
+      responses:
+        '200':
+          description: 'Ok. Show view news UI.'
+        '404':
+          description: 'Not Found. News not found.'
+
+  /news/edit/{news}:
+    get:
+      operationId: R203
+      summary: 'R203: View news edit form'
+      description: 'Show the user interface for news edition. Access: OWN, ADM'
+      tags:
+       - 'M02: News'
+       - 'M04: Admin/Moderator Management'
+
+      parameters:
+        - in: path
+          name: news
+          schema:
+            type: object
+          required: true
+      
+      responses:
+        '200':
+          description: 'Ok. Show user news edition UI.'
+        '404':
+          description: 'Not Found. News not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+
+    post:
+      operationId: R204
+      summary: 'R204: Process the news edit form'
+      description: 'Process the news editing form. Access: OWN, ADM'
+      tags:
+      - 'M02: News'
+      - 'M04: Admin/Moderator Management'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                title:
+                  type: string
+                content:
+                  type: string
+      
+      responses:
+        '302':
+          description: 'Redirect after processing the new profile information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful editing. Redirect to news page.'
+                  value: '/news/{id}'
+                302Failure:
+                  description: 'Failed editing. Redirect to edit news page.'
+                  value: '/news/edit/{id}'
+        '404':
+          description: 'Not Found. News not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+    
+  /news/delete/{news}:
+    get:
+      operationId: R205
+      summary: 'R205: View news deletion form'
+      description: 'Show the user interface for news deletion. Access: OWN, ADM'
+      tags:
+        - 'M02: News'
+        - 'M04: Admin/Moderator Management'
+
+      parameters:
+        - in: path
+          name: news
+          schema:
+            type: object
+          required: true
+      
+      responses:
+        '200':
+          description: 'Ok. Show news deletion UI.'
+        '404':
+          description: 'Not Found. News not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+
+    post:
+      operationId: R206
+      summary: 'R206: Delete the news piece.'
+      description: 'Delete the news piece. Access: OWN, ADM'
+      tags:
+      - 'M02: News'
+      - 'M04: Admin/Moderator Management'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+              required: 
+                - id
+      
+      responses:
+        '302':
+          description: 'Redirect after deleting the news piece.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful deletion. Redirect to main page.'
+                  value: '/news'
+        '404':
+          description: 'Not Found. News not found.'
+        '403':
+          description: 'Forbidden. User not allowed.'
+ 
+  /news/create:
+    get:
+      operationId: R207
+      summary: 'R207: View news creation form'
+      description: 'Show the user interface for news creation. Access: USR'
+      tags:
+       - 'M02: News'
+      
+      responses:
+        '200':
+          description: 'Ok. Show user news creation UI.'
+
+    post:
+      operationId: R208
+      summary: 'R208: Process the news creation form'
+      description: 'Process the news creation form. Access: USR'
+      tags:
+      - 'M02: News'
+
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                title:
+                  type: string
+                content:
+                  type: string
+              required:
+                - title
+                - content
+      
+      responses:
+        '302':
+          description: 'Redirect after processing the new news information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful creation. Redirect to news page.'
+                  value: '/news/{id}'
+                302Failure:
+                  description: 'Failed creation. Redirect to news creation page.'
+                  value: '/news/create'
+

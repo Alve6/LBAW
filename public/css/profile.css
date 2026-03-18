@@ -1,0 +1,146 @@
+.goback {
+    position: fixed;
+    top: 20px;
+    left: calc(30% + 20px);
+    font-size: 32px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    z-index: 100;
+    text-decoration: none;
+    color: #000000;
+}
+
+.goback:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.profile_info_main {
+    margin-top: 80px;
+    padding: 30px;
+    background-color: #ffffff;
+}
+
+.profile-top {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #000000;
+}
+
+.profile-main-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;   
+    object-position: center; 
+}
+
+.profile-details {
+    flex: 1;
+}
+
+.profile-username {
+    margin: 0 0 5px 0;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.profile-name {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #666;
+}
+
+.profile-description {
+    margin: 0 0 20px 0;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+.profile-actions {
+    margin-top: 20px;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 40px;
+    padding: 20px 0;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    border: 2px solid #000000;
+    border-radius: 10px;
+}
+
+.stat-icon {
+    font-size: 24px;
+}
+
+.stat-count {
+    font-weight: bold;
+}
+
+.profile-news-section {
+    margin-top: 40px;
+    padding-top: 30px;
+}
+
+.profile-news-section h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.profile-news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.profile-news-item {
+    padding: 15px;
+    border: 2px solid #000000;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s;
+}
+
+.profile-news-item:hover {
+    background-color: #efefef;
+}
+
+.profile-news-item a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.profile-news-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.profile-news-item p {
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+    color: #333;
+}
+
+.news-date {
+    font-size: 14px;
+    color: #666;
+}

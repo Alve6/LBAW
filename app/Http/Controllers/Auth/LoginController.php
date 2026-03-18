@@ -1,0 +1,58 @@
+<?php
+ 
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+
+class LoginController extends Controller
+{
+
+    /**
+     * Show the login form.
+     *
+     * If the user is already authenticated, redirect them
+     * to the cards dashboard instead of showing the form.
+     */
+    public function showLoginForm()
+    {
+        if (Auth::check()) {
+            return redirect()->route('homepage');
+        } else {
+            return view('auth.login');
+        }
+    }
+
+    /**
+     * Process an authentication attempt.
+     *
+     * Validates the incoming request, checks the provided
+     * credentials, and logs the user in if successful.
+     * The session is regenerated to protect against session fixation.
+     */
+    public function authenticate(Request $request): RedirectResponse
+    {
+        // Validate the request data.
+        $credentials = $request->validate([
+            'username' => ['required'],
+            'password' => ['required'],
+        ]);
+ 
+        // Attempt to authenticate and log in the user.
+        if (Auth::attempt($credentials)) {
+            // Regenerate the session ID to prevent session fixation attacks.
+            $request->session()->regenerate();
+ 
+            // Redirect the user to their intended destination (default: homepage).
+            return redirect()->intended(route('homepage'));
+        }
+ 
+        // Authentication failed: return back with an error message.
+        return back()->withErrors([
+            'username' => 'The provided credentials do not match our records.',
+        ])->onlyInput('username');
+    }
+}
